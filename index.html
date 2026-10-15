@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lot Calc">
+<link rel="manifest" href="manifest.json">
+<title>Position Size Calculator</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121c2d;--line:#28364b;--text:#eef4ff;--muted:#9aabc3;--accent:#72a7ff;--green:#62d6a5;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#101827,#0b1220 45%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);padding:env(safe-area-inset-top) 14px calc(24px + env(safe-area-inset-bottom));}
+main{max-width:650px;margin:0 auto}.top{padding:22px 4px 14px}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800}h1{font-size:26px;line-height:1.15;margin:7px 0}.sub{color:var(--muted);font-size:14px;line-height:1.45}
+.card{background:rgba(18,28,45,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:7px;min-width:0}label{font-size:12px;color:var(--muted);font-weight:650}input,select{width:100%;min-width:0;background:#0b1423;border:1px solid #33435a;border-radius:11px;padding:13px 11px;color:var(--text);font-size:16px;outline:none}input:focus,select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.section-title{font-size:15px;font-weight:800;margin:0 0 13px}.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seg button,.reset{border:1px solid #33435a;background:#0b1423;color:var(--muted);padding:11px;border-radius:10px;font-weight:750}.seg button.active{background:#203c64;border-color:var(--accent);color:white}.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#0b1423;border:1px solid #26354a;border-radius:13px;padding:13px;min-width:0}.metric .k{font-size:11px;color:var(--muted);line-height:1.35}.metric .v{font-size:22px;font-weight:850;margin-top:7px;overflow-wrap:anywhere}.metric .small{font-size:13px}.good{color:var(--green)}.bad{color:var(--red)}.hero{grid-column:1/-1;background:linear-gradient(135deg,#1b3558,#142338);border-color:#36577e}.hero .v{font-size:32px}.note{font-size:12px;line-height:1.5;color:var(--muted);margin:12px 2px 0}.warn{border-left:3px solid #f0bd64;padding:10px 12px;background:#2a2419;border-radius:7px;color:#f4d9a5;font-size:12px;line-height:1.45}.footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.pill{font-size:11px;background:#203c64;padding:5px 8px;border-radius:20px;color:#cfe0ff;font-weight:800}
+@media(max-width:380px){.grid,.results{gap:8px}.card{padding:12px}.metric{padding:10px}.metric .v{font-size:19px}.hero .v{font-size:28px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div class="eyebrow">Trading toolkit</div>
+    <h1>Position Size Calculator</h1>
+    <div class="sub">Изчисли размера на позицията според риска и разстоянието до Stop Loss.</div>
+  </header>
+
+  <section class="card">
+    <div class="section-title">1. Акаунт и риск</div>
+    <div class="grid">
+      <div class="field"><label for="balance">Баланс на сметката ($)</label><input id="balance" type="number" inputmode="decimal" value="10000" min="0" step="any"></div>
+      <div class="field"><label for="risk">Риск</label><input id="risk" type="number" inputmode="decimal" value="400" min="0" step="any"></div>
+      <div class="field"><label for="riskMode">Рискът е въведен като</label><select id="riskMode"><option value="money">Долари ($)</option><option value="percent">Процент (%)</option></select></div>
+      <div class="field"><label for="symbol">Инструмент</label><input id="symbol" value="NZD/USD" autocomplete="off"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title">2. Нива на сделката</div>
+    <div class="grid">
+      <div class="field"><label for="entry">Entry (вход)</label><input id="entry" type="number" inputmode="decimal" value="0.58246" step="any"></div>
+      <div class="field"><label for="sl">Stop Loss</label><input id="sl" type="number" inputmode="decimal" value="0.58680" step="any"></div>
+      <div class="field"><label for="tp">Take Profit</label><input id="tp" type="number" inputmode="decimal" value="0.56934" step="any"></div>
+      <div class="field"><label for="pipSize">Размер на 1 пипс в цената</label><input id="pipSize" type="number" inputmode="decimal" value="0.0001" step="any"></div>
+      <div class="field full"><label for="pipValue">Стойност на 1 пипс за 1.00 лот ($)</label><input id="pipValue" type="number" inputmode="decimal" value="10" step="any"></div>
+    </div>
+    <p class="note">За повечето стандартни USD-котирани Forex двойки 1 пипс често е 0.0001 и стойността му е около $10 за 1 стандартен лот. Проверявай спецификацията на инструмента при своя брокер. За XAU/USD въведи правилния размер и парична стойност на тик/пипс според договора.</p>
+  </section>
+
+  <section class="card">
+    <div class="row"><div class="section-title" style="margin:0">3. Резултати</div><span class="pill">LIVE</span></div>
+    <div class="results" style="margin-top:13px">
+      <div class="metric hero"><div class="k">Препоръчителен размер на позицията</div><div class="v" id="lots">0.92 лота</div><div class="k" id="riskSummary">Рискът е закръглен надолу до стъпка 0.01 лота</div></div>
+      <div class="metric"><div class="k">Планиран риск</div><div class="v bad" id="riskCash">$399.28</div><div class="k" id="riskPercent">4.00% от баланса</div></div>
+      <div class="metric"><div class="k">Потенциална печалба</div><div class="v good" id="profit">+$1,207.04</div><div class="k">Преди спред, комисиони и слипидж</div></div>
+      <div class="metric"><div class="k">Разстояние до SL</div><div class="v" id="slPips">43.4 пипса</div></div>
+      <div class="metric"><div class="k">Разстояние до TP</div><div class="v" id="tpPips">131.2 пипса</div></div>
+      <div class="metric"><div class="k">Risk / Reward</div><div class="v" id="rr">1 : 3.02</div></div>
+      <div class="metric"><div class="k">Стойност на пипс при тази позиция</div><div class="v" id="positionPip">$9.20</div></div>
+    </div>
+    <div id="warning" class="warn" style="margin-top:13px">Провери стойността на пипса при своя брокер. Реалната загуба може да е по-висока заради разходи или слипидж.</div>
+  </section>
+  <div class="footer">Инструмент за изчисление, не инвестиционен съвет. Проверявай спецификациите и ограниченията на акаунта.</div>
+</main>
+<script>
+const ids=['balance','risk','riskMode','symbol','entry','sl','tp','pipSize','pipValue'];
+const el=id=>document.getElementById(id);
+const num=id=>Number(el(id).value);
+const money=n=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function calc(){
+ const bal=num('balance'), rawRisk=num('risk'), riskMode=el('riskMode').value;
+ const entry=num('entry'), sl=num('sl'), tp=num('tp'), pipSize=num('pipSize'), pipValue=num('pipValue');
+ const riskCash=riskMode==='percent'?bal*rawRisk/100:rawRisk;
+ const slDist=Math.abs(entry-sl), tpDist=Math.abs(entry-tp);
+ const valid=[bal,rawRisk,entry,sl,tp,pipSize,pipValue].every(Number.isFinite)&&bal>0&&rawRisk>0&&entry>0&&sl>0&&tp>0&&pipSize>0&&pipValue>0&&sl!==entry&&((sl>entry&&tp<entry)||(sl<entry&&tp>entry));
+ if(!valid){el('lots').textContent='Провери данните';['riskCash','profit','slPips','tpPips','rr','positionPip','riskPercent'].forEach(id=>el(id).textContent='—');el('warning').textContent='За SHORT: SL трябва да е над входа, TP под входа. За LONG: SL под входа, TP над входа. Всички полета трябва да са положителни.';return;}
+ const slPips=slDist/pipSize, tpPips=tpDist/pipSize;
+ const rawLots=riskCash/(slPips*pipValue);
+ const lots=Math.floor((rawLots+1e-10)*100)/100;
+ const planned=lots*slPips*pipValue, profit=lots*tpPips*pipValue;
+ el('lots').textContent=lots.toFixed(2)+' лота';
+ el('riskSummary').textContent='Теоретичен размер '+rawLots.toFixed(4)+'; закръглен надолу до 0.01';
+ el('riskCash').textContent=money(planned);
+ el('riskPercent').textContent=(planned/bal*100).toFixed(2)+'% от баланса (лимит '+(riskCash/bal*100).toFixed(2)+'%)';
+ el('profit').textContent='+'+money(profit);
+ el('slPips').textContent=slPips.toLocaleString('en-US',{maximumFractionDigits:2})+' пипса';
+ el('tpPips').textContent=tpPips.toLocaleString('en-US',{maximumFractionDigits:2})+' пипса';
+ el('rr').textContent='1 : '+(tpDist/slDist).toFixed(2);
+ el('positionPip').textContent=money(lots*pipValue);
+ let msg='Провери стойността на пипса при своя брокер. Реалната загуба може да е по-висока заради спред, комисиони, суап или слипидж.';
+ if(lots===0) msg='Рискът е твърде малък за позиция от минимум 0.01 лота при зададените параметри.';
+ else if(planned>riskCash+0.001) msg='Внимание: изчисленият риск надвишава лимита. Намали размера на позицията.';
+ el('warning').textContent=msg;
+}
+ids.forEach(id=>el(id).addEventListener('input',calc));
+calc();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
