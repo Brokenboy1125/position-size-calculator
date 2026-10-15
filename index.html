@@ -1,100 +1,578 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bg">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101827">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lot Calc">
-<link rel="manifest" href="manifest.json">
-<title>Position Size Calculator</title>
-<style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#121c2d;--line:#28364b;--text:#eef4ff;--muted:#9aabc3;--accent:#72a7ff;--green:#62d6a5;--red:#ff8585}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#101827,#0b1220 45%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);padding:env(safe-area-inset-top) 14px calc(24px + env(safe-area-inset-bottom));}
-main{max-width:650px;margin:0 auto}.top{padding:22px 4px 14px}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:800}h1{font-size:26px;line-height:1.15;margin:7px 0}.sub{color:var(--muted);font-size:14px;line-height:1.45}
-.card{background:rgba(18,28,45,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:7px;min-width:0}label{font-size:12px;color:var(--muted);font-weight:650}input,select{width:100%;min-width:0;background:#0b1423;border:1px solid #33435a;border-radius:11px;padding:13px 11px;color:var(--text);font-size:16px;outline:none}input:focus,select:focus{border-color:var(--accent)}.full{grid-column:1/-1}.section-title{font-size:15px;font-weight:800;margin:0 0 13px}.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seg button,.reset{border:1px solid #33435a;background:#0b1423;color:var(--muted);padding:11px;border-radius:10px;font-weight:750}.seg button.active{background:#203c64;border-color:var(--accent);color:white}.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#0b1423;border:1px solid #26354a;border-radius:13px;padding:13px;min-width:0}.metric .k{font-size:11px;color:var(--muted);line-height:1.35}.metric .v{font-size:22px;font-weight:850;margin-top:7px;overflow-wrap:anywhere}.metric .small{font-size:13px}.good{color:var(--green)}.bad{color:var(--red)}.hero{grid-column:1/-1;background:linear-gradient(135deg,#1b3558,#142338);border-color:#36577e}.hero .v{font-size:32px}.note{font-size:12px;line-height:1.5;color:var(--muted);margin:12px 2px 0}.warn{border-left:3px solid #f0bd64;padding:10px 12px;background:#2a2419;border-radius:7px;color:#f4d9a5;font-size:12px;line-height:1.45}.footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.pill{font-size:11px;background:#203c64;padding:5px 8px;border-radius:20px;color:#cfe0ff;font-weight:800}
-@media(max-width:380px){.grid,.results{gap:8px}.card{padding:12px}.metric{padding:10px}.metric .v{font-size:19px}.hero .v{font-size:28px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Forex Position Size Calculator | Risk Management</title>
+  <meta name="description" content="Професионален калкулатор за размер на позиция във Forex. Изчислява точен lot size според риска, stop loss и валутната двойка." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --card-hover: #243044;
+      --border: #2d3a4f;
+      --text: #e7ecf3;
+      --text-muted: #8b9bb4;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --input-bg: #0f1419;
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-top: 12px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .label-hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      color: var(--text);
+      font-family: inherit;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .toggle-group {
+      display: flex;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .toggle-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .results {
+      background: linear-gradient(145deg, #1a2332 0%, #15202b 100%);
+    }
+
+    .result-main {
+      text-align: center;
+      padding: 8px 0 20px;
+    }
+
+    .result-main .lots {
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--success);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .result-main .lots-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .result-item {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .result-item .value {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .result-item .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .result-item.full {
+      grid-column: 1 / -1;
+    }
+
+    .risk-amount {
+      color: var(--danger) !important;
+    }
+
+    .profit-amount {
+      color: var(--success) !important;
+    }
+
+    .rr-good {
+      color: var(--success) !important;
+    }
+
+    .warning-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.8rem;
+      color: var(--warning);
+      margin-top: 16px;
+      display: none;
+    }
+
+    .warning-box.show {
+      display: block;
+    }
+
+    .formula-box {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .formula-box code {
+      color: var(--primary);
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: 0.85em;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 0 12px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .advanced-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 8px 0;
+      user-select: none;
+    }
+
+    .advanced-toggle span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .chevron {
+      transition: transform 0.2s;
+      color: var(--text-muted);
+    }
+
+    .chevron.open {
+      transform: rotate(180deg);
+    }
+
+    #advancedSection {
+      display: none;
+      margin-top: 12px;
+    }
+
+    #advancedSection.open {
+      display: block;
+    }
+
+    .unit-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 400px) {
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+      .result-main .lots {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<main>
-  <header class="top">
-    <div class="eyebrow">Trading toolkit</div>
-    <h1>Position Size Calculator</h1>
-    <div class="sub">Изчисли размера на позицията според риска и разстоянието до Stop Loss.</div>
-  </header>
+  <div class="container">
+    <header>
+      <h1>Position Size Calculator</h1>
+      <p>Изчисли точния размер на позицията според риска</p>
+    </header>
 
-  <section class="card">
-    <div class="section-title">1. Акаунт и риск</div>
-    <div class="grid">
-      <div class="field"><label for="balance">Баланс на сметката ($)</label><input id="balance" type="number" inputmode="decimal" value="10000" min="0" step="any"></div>
-      <div class="field"><label for="risk">Риск</label><input id="risk" type="number" inputmode="decimal" value="400" min="0" step="any"></div>
-      <div class="field"><label for="riskMode">Рискът е въведен като</label><select id="riskMode"><option value="money">Долари ($)</option><option value="percent">Процент (%)</option></select></div>
-      <div class="field"><label for="symbol">Инструмент</label><input id="symbol" value="NZD/USD" autocomplete="off"></div>
-    </div>
-  </section>
+    <!-- ВХОДНИ ДАННИ -->
+    <div class="card">
+      <div class="card-title">Параметри на сделката</div>
 
-  <section class="card">
-    <div class="section-title">2. Нива на сделката</div>
-    <div class="grid">
-      <div class="field"><label for="entry">Entry (вход)</label><input id="entry" type="number" inputmode="decimal" value="0.58246" step="any"></div>
-      <div class="field"><label for="sl">Stop Loss</label><input id="sl" type="number" inputmode="decimal" value="0.58680" step="any"></div>
-      <div class="field"><label for="tp">Take Profit</label><input id="tp" type="number" inputmode="decimal" value="0.56934" step="any"></div>
-      <div class="field"><label for="pipSize">Размер на 1 пипс в цената</label><input id="pipSize" type="number" inputmode="decimal" value="0.0001" step="any"></div>
-      <div class="field full"><label for="pipValue">Стойност на 1 пипс за 1.00 лот ($)</label><input id="pipValue" type="number" inputmode="decimal" value="10" step="any"></div>
-    </div>
-    <p class="note">За повечето стандартни USD-котирани Forex двойки 1 пипс често е 0.0001 и стойността му е около $10 за 1 стандартен лот. Проверявай спецификацията на инструмента при своя брокер. За XAU/USD въведи правилния размер и парична стойност на тик/пипс според договора.</p>
-  </section>
+      <div class="form-group">
+        <label>Баланс на акаунта <span class="label-hint">(Account Balance)</span></label>
+        <input type="number" id="balance" value="10000" min="0" step="any" placeholder="10000" />
+      </div>
 
-  <section class="card">
-    <div class="row"><div class="section-title" style="margin:0">3. Резултати</div><span class="pill">LIVE</span></div>
-    <div class="results" style="margin-top:13px">
-      <div class="metric hero"><div class="k">Препоръчителен размер на позицията</div><div class="v" id="lots">0.92 лота</div><div class="k" id="riskSummary">Рискът е закръглен надолу до стъпка 0.01 лота</div></div>
-      <div class="metric"><div class="k">Планиран риск</div><div class="v bad" id="riskCash">$399.28</div><div class="k" id="riskPercent">4.00% от баланса</div></div>
-      <div class="metric"><div class="k">Потенциална печалба</div><div class="v good" id="profit">+$1,207.04</div><div class="k">Преди спред, комисиони и слипидж</div></div>
-      <div class="metric"><div class="k">Разстояние до SL</div><div class="v" id="slPips">43.4 пипса</div></div>
-      <div class="metric"><div class="k">Разстояние до TP</div><div class="v" id="tpPips">131.2 пипса</div></div>
-      <div class="metric"><div class="k">Risk / Reward</div><div class="v" id="rr">1 : 3.02</div></div>
-      <div class="metric"><div class="k">Стойност на пипс при тази позиция</div><div class="v" id="positionPip">$9.20</div></div>
+      <div class="form-group">
+        <label>Риск на сделка <span class="label-hint">(%)</span></label>
+        <input type="number" id="riskPercent" value="1" min="0.01" max="100" step="0.1" placeholder="1" />
+      </div>
+
+      <div class="form-group">
+        <label>Stop Loss <span class="label-hint">(в пипсове)</span></label>
+        <input type="number" id="stopLoss" value="30" min="0.1" step="0.1" placeholder="30" />
+      </div>
+
+      <div class="form-group">
+        <label>Валутна двойка</label>
+        <select id="pair">
+          <option value="EURUSD">EUR/USD</option>
+          <option value="GBPUSD">GBP/USD</option>
+          <option value="AUDUSD">AUD/USD</option>
+          <option value="NZDUSD">NZD/USD</option>
+          <option value="USDCAD">USD/CAD</option>
+          <option value="USDCHF">USD/CHF</option>
+          <option value="USDJPY">USD/JPY</option>
+          <option value="EURJPY">EUR/JPY</option>
+          <option value="GBPJPY">GBP/JPY</option>
+          <option value="EURGBP">EUR/GBP</option>
+          <option value="XAUUSD">XAU/USD (Gold)</option>
+          <option value="XAGUSD">XAG/USD (Silver)</option>
+        </select>
+      </div>
+
+      <div class="advanced-toggle" onclick="toggleAdvanced()">
+        <span>Допълнителни параметри</span>
+        <svg class="chevron" id="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+
+      <div id="advancedSection">
+        <div class="form-group">
+          <label>Take Profit <span class="label-hint">(в пипсове, опционално)</span></label>
+          <input type="number" id="takeProfit" value="" min="0" step="0.1" placeholder="напр. 60" />
+        </div>
+
+        <div class="form-group">
+          <label>Текуща цена на двойката <span class="label-hint">(за точен pip value при JPY и cross pairs)</span></label>
+          <input type="number" id="currentPrice" value="" min="0" step="any" placeholder="напр. 1.0850 или 150.50" />
+          <div class="unit-hint">Остави празно за приблизителна стойност</div>
+        </div>
+
+        <div class="form-group">
+          <label>Размер на 1 lot (Contract Size)</label>
+          <select id="contractSize">
+            <option value="100000">100 000 (Standard Forex)</option>
+            <option value="100">100 oz (Gold - XAU)</option>
+            <option value="5000">5 000 oz (Silver - XAG)</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div id="warning" class="warn" style="margin-top:13px">Провери стойността на пипса при своя брокер. Реалната загуба може да е по-висока заради разходи или слипидж.</div>
-  </section>
-  <div class="footer">Инструмент за изчисление, не инвестиционен съвет. Проверявай спецификациите и ограниченията на акаунта.</div>
-</main>
-<script>
-const ids=['balance','risk','riskMode','symbol','entry','sl','tp','pipSize','pipValue'];
-const el=id=>document.getElementById(id);
-const num=id=>Number(el(id).value);
-const money=n=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-function calc(){
- const bal=num('balance'), rawRisk=num('risk'), riskMode=el('riskMode').value;
- const entry=num('entry'), sl=num('sl'), tp=num('tp'), pipSize=num('pipSize'), pipValue=num('pipValue');
- const riskCash=riskMode==='percent'?bal*rawRisk/100:rawRisk;
- const slDist=Math.abs(entry-sl), tpDist=Math.abs(entry-tp);
- const valid=[bal,rawRisk,entry,sl,tp,pipSize,pipValue].every(Number.isFinite)&&bal>0&&rawRisk>0&&entry>0&&sl>0&&tp>0&&pipSize>0&&pipValue>0&&sl!==entry&&((sl>entry&&tp<entry)||(sl<entry&&tp>entry));
- if(!valid){el('lots').textContent='Провери данните';['riskCash','profit','slPips','tpPips','rr','positionPip','riskPercent'].forEach(id=>el(id).textContent='—');el('warning').textContent='За SHORT: SL трябва да е над входа, TP под входа. За LONG: SL под входа, TP над входа. Всички полета трябва да са положителни.';return;}
- const slPips=slDist/pipSize, tpPips=tpDist/pipSize;
- const rawLots=riskCash/(slPips*pipValue);
- const lots=Math.floor((rawLots+1e-10)*100)/100;
- const planned=lots*slPips*pipValue, profit=lots*tpPips*pipValue;
- el('lots').textContent=lots.toFixed(2)+' лота';
- el('riskSummary').textContent='Теоретичен размер '+rawLots.toFixed(4)+'; закръглен надолу до 0.01';
- el('riskCash').textContent=money(planned);
- el('riskPercent').textContent=(planned/bal*100).toFixed(2)+'% от баланса (лимит '+(riskCash/bal*100).toFixed(2)+'%)';
- el('profit').textContent='+'+money(profit);
- el('slPips').textContent=slPips.toLocaleString('en-US',{maximumFractionDigits:2})+' пипса';
- el('tpPips').textContent=tpPips.toLocaleString('en-US',{maximumFractionDigits:2})+' пипса';
- el('rr').textContent='1 : '+(tpDist/slDist).toFixed(2);
- el('positionPip').textContent=money(lots*pipValue);
- let msg='Провери стойността на пипса при своя брокер. Реалната загуба може да е по-висока заради спред, комисиони, суап или слипидж.';
- if(lots===0) msg='Рискът е твърде малък за позиция от минимум 0.01 лота при зададените параметри.';
- else if(planned>riskCash+0.001) msg='Внимание: изчисленият риск надвишава лимита. Намали размера на позицията.';
- el('warning').textContent=msg;
-}
-ids.forEach(id=>el(id).addEventListener('input',calc));
-calc();
-if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script>
+
+    <!-- РЕЗУЛТАТИ -->
+    <div class="card results">
+      <div class="card-title">Резултат</div>
+
+      <div class="result-main">
+        <div class="lots" id="lotsResult">0.33</div>
+        <div class="lots-label">стандартни лота (Lots)</div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="value risk-amount" id="riskAmount">$100.00</div>
+          <div class="label">Риск сума</div>
+        </div>
+        <div class="result-item">
+          <div class="value" id="pipValue">$10.00</div>
+          <div class="label">Pip Value / 1 lot</div>
+        </div>
+        <div class="result-item">
+          <div class="value" id="units">33 000</div>
+          <div class="label">Units</div>
+        </div>
+        <div class="result-item">
+          <div class="value" id="microLots">33.0</div>
+          <div class="label">Micro Lots (0.01)</div>
+        </div>
+        <div class="result-item full" id="rrRow" style="display:none;">
+          <div class="value" id="rrRatio">1 : 2.0</div>
+          <div class="label">Risk : Reward</div>
+        </div>
+        <div class="result-item" id="profitRow" style="display:none;">
+          <div class="value profit-amount" id="potentialProfit">$200.00</div>
+          <div class="label">Потенциална печалба</div>
+        </div>
+        <div class="result-item" id="lossRow" style="display:none;">
+          <div class="value risk-amount" id="potentialLoss">$100.00</div>
+          <div class="label">Загуба при SL</div>
+        </div>
+      </div>
+
+      <div class="warning-box" id="warningBox">
+        Внимание: При този размер позицията е много голяма спрямо акаунта. Провери маржа и лостажа.
+      </div>
+
+      <div class="formula-box">
+        <strong>Формула:</strong><br>
+        Risk Amount = Balance × (Risk % / 100)<br>
+        Lots = Risk Amount ÷ (Stop Loss pips × Pip Value per lot)
+      </div>
+    </div>
+
+    <footer>
+      Position Size Calculator · Risk Management Tool<br>
+      <span style="opacity:0.7">Не е финансов съвет. Винаги проверявай с брокера си.</span>
+    </footer>
+  </div>
+
+  <script>
+    // ===== Pip value logic =====
+    const pairConfig = {
+      EURUSD: { pipSize: 0.0001, quoteUSD: true },
+      GBPUSD: { pipSize: 0.0001, quoteUSD: true },
+      AUDUSD: { pipSize: 0.0001, quoteUSD: true },
+      NZDUSD: { pipSize: 0.0001, quoteUSD: true },
+      USDCAD: { pipSize: 0.0001, quoteUSD: false, approxRate: 1.36 },
+      USDCHF: { pipSize: 0.0001, quoteUSD: false, approxRate: 0.88 },
+      USDJPY: { pipSize: 0.01, quoteUSD: false, approxRate: 150 },
+      EURJPY: { pipSize: 0.01, quoteUSD: false, approxRate: 162 },
+      GBPJPY: { pipSize: 0.01, quoteUSD: false, approxRate: 190 },
+      EURGBP: { pipSize: 0.0001, quoteUSD: false, approxRate: 0.85 },
+      XAUUSD: { pipSize: 0.01, quoteUSD: true, isMetal: true },
+      XAGUSD: { pipSize: 0.001, quoteUSD: true, isMetal: true }
+    };
+
+    function getPipValue(pair, contractSize, currentPrice) {
+      const cfg = pairConfig[pair] || pairConfig.EURUSD;
+      const price = currentPrice || cfg.approxRate || 1;
+
+      // Metals special handling
+      if (pair === 'XAUUSD') {
+        // Gold: 1 lot = 100 oz, pip = $0.01 move → $1 per pip per lot
+        return 1.0 * (contractSize / 100);
+      }
+      if (pair === 'XAGUSD') {
+        // Silver: 1 lot usually 5000 oz, pip $0.001 → ~$5 per pip
+        return 5.0 * (contractSize / 5000);
+      }
+
+      // Standard forex
+      if (cfg.quoteUSD) {
+        // USD is quote currency → pip value = contractSize * pipSize
+        return contractSize * cfg.pipSize;
+      } else {
+        // Need conversion: pip value in quote currency / price (to get USD)
+        // For JPY pairs price is high, for others lower
+        const pipValueInQuote = contractSize * cfg.pipSize;
+        return pipValueInQuote / price;
+      }
+    }
+
+    function calculate() {
+      const balance = parseFloat(document.getElementById('balance').value) || 0;
+      const riskPercent = parseFloat(document.getElementById('riskPercent').value) || 0;
+      const stopLoss = parseFloat(document.getElementById('stopLoss').value) || 0;
+      const pair = document.getElementById('pair').value;
+      const takeProfit = parseFloat(document.getElementById('takeProfit').value) || 0;
+      const currentPrice = parseFloat(document.getElementById('currentPrice').value) || null;
+      let contractSize = parseFloat(document.getElementById('contractSize').value) || 100000;
+
+      // Auto-adjust contract size for metals if user left default
+      if (pair === 'XAUUSD' && contractSize === 100000) {
+        contractSize = 100;
+        document.getElementById('contractSize').value = '100';
+      }
+      if (pair === 'XAGUSD' && contractSize === 100000) {
+        contractSize = 5000;
+        document.getElementById('contractSize').value = '5000';
+      }
+
+      // Risk amount
+      const riskAmount = balance * (riskPercent / 100);
+
+      // Pip value
+      const pipValue = getPipValue(pair, contractSize, currentPrice);
+
+      // Lots
+      let lots = 0;
+      if (stopLoss > 0 && pipValue > 0) {
+        lots = riskAmount / (stopLoss * pipValue);
+      }
+
+      // Round down to 0.01 for safety (never risk more)
+      const lotsRounded = Math.floor(lots * 100) / 100;
+
+      // Units
+      const units = Math.round(lotsRounded * contractSize);
+
+      // Micro lots
+      const microLots = (lotsRounded * 100).toFixed(1);
+
+      // Update UI
+      document.getElementById('lotsResult').textContent = lotsRounded.toFixed(2);
+      document.getElementById('riskAmount').textContent = '$' + riskAmount.toFixed(2);
+      document.getElementById('pipValue').textContent = '$' + pipValue.toFixed(2);
+      document.getElementById('units').textContent = units.toLocaleString('bg-BG');
+      document.getElementById('microLots').textContent = microLots;
+
+      // Take Profit / R:R
+      if (takeProfit > 0) {
+        const potentialProfit = lotsRounded * takeProfit * pipValue;
+        const rr = takeProfit / stopLoss;
+        document.getElementById('rrRow').style.display = 'block';
+        document.getElementById('profitRow').style.display = 'block';
+        document.getElementById('lossRow').style.display = 'block';
+        document.getElementById('rrRatio').textContent = '1 : ' + rr.toFixed(2);
+        document.getElementById('rrRatio').className = 'value ' + (rr >= 1.5 ? 'rr-good' : '');
+        document.getElementById('potentialProfit').textContent = '$' + potentialProfit.toFixed(2);
+        document.getElementById('potentialLoss').textContent = '$' + riskAmount.toFixed(2);
+      } else {
+        document.getElementById('rrRow').style.display = 'none';
+        document.getElementById('profitRow').style.display = 'none';
+        document.getElementById('lossRow').style.display = 'none';
+      }
+
+      // Warning if position is very large
+      const warning = document.getElementById('warningBox');
+      if (lotsRounded > balance / 1000 || riskPercent > 3) {
+        warning.classList.add('show');
+      } else {
+        warning.classList.remove('show');
+      }
+    }
+
+    function toggleAdvanced() {
+      const section = document.getElementById('advancedSection');
+      const chevron = document.getElementById('chevron');
+      section.classList.toggle('open');
+      chevron.classList.toggle('open');
+    }
+
+    // Event listeners
+    ['balance', 'riskPercent', 'stopLoss', 'pair', 'takeProfit', 'currentPrice', 'contractSize'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculate);
+      document.getElementById(id).addEventListener('change', calculate);
+    });
+
+    // Initial calculation
+    calculate();
+  </script>
 </body>
 </html>
